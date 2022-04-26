@@ -1,12 +1,10 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {
   View,
   Text,
   TextInput,
   Image,
-  TouchableWithoutFeedback,
   TouchableOpacity,
-  KeyboardAvoidingView,
   StyleSheet,
 } from 'react-native';
 import Modal from 'react-native-modal';
@@ -19,23 +17,30 @@ function BottomSheetSumInputModal({
   handleTextChange,
   icon,
 }) {
+  const inputRef = useRef();
+  // setTimeout(() => inputRef.current.focus(), 100);
+
   const [isFocused, setIsFocudes] = useState(false);
+  const [inputValue, setInputValue] = useState(value);
 
   const handleFocus = () => setIsFocudes(true);
   const handleBlur = () => setIsFocudes(false);
+  const handleSubmit = () => {
+    toggleSumModal();
+    handleTextChange(inputValue);
+  };
 
   const labelStyle = {
     position: 'absolute',
     left: 10,
-    top: !isFocused && !value ? 13 : 4,
-    fontSize: !isFocused && !value ? 16 : 11,
-    color: value > 6000 ? '#00D8F9' : !isFocused ? '#B2BDC5' : '#4B595C',
-    fontWeight: '500',
+    top: !isFocused && !inputValue ? 13 : 4,
+    fontSize: !isFocused && !inputValue ? 16 : 11,
+    color: inputValue > 6000 ? '#00D8F9' : '#DEDEDE',
+    fontFamily: 'Ubuntu-Medium',
   };
 
   return (
     <Modal
-      // avoidKeyboard={true}
       style={styles.modal}
       animationIn={'slideInUp'}
       animationOut={'slideOutDown'}
@@ -45,53 +50,59 @@ function BottomSheetSumInputModal({
       onSwipeComplete={() => setSumModalVisible(false)}
       swipeDirection="down">
       <View style={styles.bottomSheet}>
-        <TouchableWithoutFeedback
-          onPress={value < 6000 ? toggleSumModal : null}>
-          <View style={styles.header}>
+        <View style={styles.handle}></View>
+
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.back_icon} onPress={toggleSumModal}>
             <Image
-              style={styles.back_icon}
+              style={{width: 11, height: 11}}
               source={require('../../assets/icons/Back_icon.png')}
             />
-            <Text style={{color: value > 6000 ? '#E8E8E8' : '#00D8F9'}}>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.submitBtnStyle}
+            onPress={inputValue && inputValue < 6000 ? handleSubmit : null}>
+            <Text
+              style={{
+                color: !inputValue || inputValue > 6000 ? '#E8E8E8' : '#00D8F9',
+                fontFamily: 'Ubuntu-Medium',
+                fontSize: 16,
+              }}>
               Готово
             </Text>
-          </View>
-        </TouchableWithoutFeedback>
+          </TouchableOpacity>
+        </View>
 
         <View style={styles.labelInput_wrapper}>
           <View style={styles.icon}>{icon}</View>
 
           <View style={styles.labelInput}>
             <Text style={labelStyle}>
-              {value > 6000
+              {!isFocused
+                ? 'Укажи сумму'
+                : inputValue > 6000
                 ? 'Не более 6 000 ₽ в одном заказе'
-                : 'Сумма оплаты'}
+                : 'Точная сумма оплаты'}
             </Text>
             <TextInput
               keyboardType="numeric"
               autoFocus={true}
-              value={value}
-              // placeholder={value}
-              onChangeText={newText => handleTextChange(newText)}
-              style={{
-                height: 50,
-                paddingHorizontal: 10,
-                fontSize: 16,
-                fontWeight: 'bold',
-                color: '#4B595C',
-                borderRadius: 16,
-              }}
+              ref={inputRef}
+              onLayout={() => inputRef.current.focus()}
+              value={inputValue}
+              onChangeText={newText => setInputValue(newText)}
+              style={styles.input}
               onFocus={handleFocus}
               onBlur={handleBlur}
               blurOnSubmit
             />
           </View>
 
-          {value ? (
-            <TouchableOpacity onPress={() => handleTextChange('')}>
+          {inputValue ? (
+            <TouchableOpacity onPress={() => setInputValue('')}>
               <Image
-                style={styles.delete_icon}
-                source={require('../../assets/icons/Delete_icon.png')}
+                style={styles.clear_icon}
+                source={require('../../assets/icons/Clear_icon.png')}
               />
             </TouchableOpacity>
           ) : null}
@@ -107,24 +118,39 @@ const styles = StyleSheet.create({
     margin: 0,
   },
   bottomSheet: {
-    padding: 15,
     backgroundColor: '#F8F8F8',
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
+    alignItems: 'center',
+  },
+
+  handle: {
+    position: 'absolute',
+    top: 0,
+    width: 61,
+    height: 4,
+    backgroundColor: '#4B595C',
+    borderBottomLeftRadius: 4,
+    borderBottomRightRadius: 4,
   },
 
   header: {
-    marginBottom: 10,
+    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   back_icon: {
-    width: 20,
-    height: 20,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+  },
+  submitBtnStyle: {
+    paddingHorizontal: 15,
+    paddingVertical: 10,
   },
 
   labelInput_wrapper: {
-    marginBottom: 5,
+    marginHorizontal: 15,
+    marginBottom: 20,
     display: 'flex',
     flexDirection: 'row',
   },
@@ -144,10 +170,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingTop: 5,
     fontSize: 16,
-    fontWeight: '500',
     borderRadius: 16,
   },
-  delete_icon: {
+  input: {
+    height: 50,
+    paddingHorizontal: 10,
+    fontSize: 16,
+    fontFamily: 'Ubuntu-Bold',
+    color: '#4B595C',
+    borderRadius: 16,
+  },
+  clear_icon: {
     position: 'absolute',
     right: 0,
     top: 10,

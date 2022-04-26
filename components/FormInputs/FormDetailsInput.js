@@ -1,55 +1,40 @@
 import React, {useState} from 'react';
-import {View, TextInput, Text, StyleSheet} from 'react-native';
+import {
+  View,
+  TextInput,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
 import BottomSheetDetailsInputModal from '../BottomSheetModals/BottomSheetDetailsInputModal';
 
 function FormDetailsInput({label, value, handleTextChange, icon}) {
-  const [isFocused, setIsFocudes] = useState(false);
   const [isDetailsModalVisible, setDetailsModalVisible] = useState(false);
 
   const toggleDetailsModal = () =>
     setDetailsModalVisible(!isDetailsModalVisible);
 
-  const handleFocus = () => setIsFocudes(true);
-  const handleBlur = () => setIsFocudes(false);
-
   const labelStyle = {
     position: 'absolute',
     left: 10,
-    top: !isFocused && !value ? 13 : 4,
-    fontSize: !isFocused && !value ? 16 : 11,
-    color: !isFocused ? '#B2BDC5' : '#4B595C',
-    fontWeight: '500',
+    top: !value ? 13 : 4,
+    fontSize: !value ? 16 : 11,
+    color: '#B2BDC5',
+    fontFamily: 'Ubuntu-Medium',
   };
 
   return (
     <View style={styles.form_item}>
       <View style={styles.icon}>{icon}</View>
 
-      <View style={styles.labelInput}>
+      <TouchableOpacity style={styles.labelInput} onPress={toggleDetailsModal}>
         <Text style={labelStyle}>{label}</Text>
-        <TextInput
-          //   editable={false}
-          showSoftInputOnFocus={false}
-          onPressIn={toggleDetailsModal}
-          value={value}
-          placeholder={value}
-          onChangeText={newText => handleTextChange(newText)}
-          style={{
-            height: 50,
-            paddingHorizontal: 10,
-            fontSize: 16,
-            fontWeight: 'bold',
-            color: '#4B595C',
-            borderRadius: 16,
-          }}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          blurOnSubmit
-        />
-      </View>
+        <Text style={styles.inputValue}>{value}</Text>
+      </TouchableOpacity>
 
       <BottomSheetDetailsInputModal
         isDetailsModalVisible={isDetailsModalVisible}
+        setDetailsModalVisible={setDetailsModalVisible}
         toggleDetailsModal={toggleDetailsModal}
         value={value}
         handleTextChange={handleTextChange}
@@ -77,11 +62,18 @@ const styles = StyleSheet.create({
   labelInput: {
     width: '85%',
     height: 50,
-    backgroundColor: '#fff',
-    paddingTop: 5,
+    paddingHorizontal: 10,
+    justifyContent: 'center',
     fontSize: 16,
     fontWeight: '500',
+    backgroundColor: '#fff',
     borderRadius: 16,
+  },
+  inputValue: {
+    marginTop: 10,
+    fontSize: 16,
+    fontFamily: 'Ubuntu-Bold',
+    color: '#4B595C',
   },
 });
 

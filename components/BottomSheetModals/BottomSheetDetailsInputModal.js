@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   Image,
-  TouchableWithoutFeedback,
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
@@ -14,15 +13,23 @@ import AddPhoto from '../AddPhoto/AddPhoto';
 
 function BottomSheetDetailsInputModal({
   isDetailsModalVisible,
+  setDetailsModalVisible,
   toggleDetailsModal,
   value,
   handleTextChange,
 }) {
+  const inputRef = useRef();
+  // setTimeout(() => inputRef.current.focus(), 100);
+
   const [isFocused, setIsFocudes] = useState(false);
+  const [inputValue, setInputValue] = useState(value);
 
   const handleFocus = () => setIsFocudes(true);
-
   const handleBlur = () => setIsFocudes(false);
+  const handleSubmit = () => {
+    toggleDetailsModal();
+    handleTextChange(inputValue);
+  };
 
   const labelStyle = {
     position: 'absolute',
@@ -30,7 +37,7 @@ function BottomSheetDetailsInputModal({
     top: 4,
     fontSize: !isFocused ? 14 : 11,
     color: '#B2BDC5',
-    fontWeight: '500',
+    fontFamily: 'Ubuntu-Medium',
   };
 
   return (
@@ -40,26 +47,44 @@ function BottomSheetDetailsInputModal({
       animationOut={'slideOutDown'}
       animationInTiming={500}
       animationOutTiming={500}
-      isVisible={isDetailsModalVisible}>
+      isVisible={isDetailsModalVisible}
+      onSwipeComplete={() => setDetailsModalVisible(false)}
+      swipeDirection="down">
       <View style={styles.bottomSheet}>
-        <TouchableWithoutFeedback onPress={toggleDetailsModal}>
-          <View style={styles.header}>
+        <View style={styles.handle}></View>
+
+        <Text style={styles.title}>Как получить заказ?</Text>
+
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.back_icon}
+            onPress={toggleDetailsModal}>
             <Image
-              style={styles.back_icon}
+              style={{width: 11, height: 11}}
               source={require('../../assets/icons/Back_icon.png')}
             />
-            <Text style={styles.title}>Как получить заказ?</Text>
-            <Text style={{color: '#00D8F9'}}>Готово</Text>
-          </View>
-        </TouchableWithoutFeedback>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.submitBtnStyle}
+            onPress={handleSubmit}>
+            <Text
+              style={{
+                color: '#00D8F9',
+                fontFamily: 'Ubuntu-Medium',
+                fontSize: 16,
+              }}>
+              Готово
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         <LinearGradient
           style={styles.info}
           start={{x: 0.0, y: 0.0}}
           end={{x: 1.0, y: 0.0}}
           colors={['#00B0F0', '#00D8F9']}>
-          <Text
-            style={{paddingHorizontal: 15, fontWeight: '500', color: '#fff'}}>
+          <Text style={styles.infoTextStyle}>
             Контакты курьера придут по СМС. Можно не указывать сейчас и сообщить
             ему детали позже.
           </Text>
@@ -73,19 +98,22 @@ function BottomSheetDetailsInputModal({
                 : 'Напиши здесь детали (необязательно)'}
             </Text>
             <TextInput
-              value={value}
-              onChangeText={newText => handleTextChange(newText)}
+              autoFocus={true}
+              ref={inputRef}
+              onLayout={() => inputRef.current.focus()}
+              value={inputValue}
+              onChangeText={newText => setInputValue(newText)}
               style={styles.input}
               onFocus={handleFocus}
               onBlur={handleBlur}
               blurOnSubmit
             />
           </View>
-          {value ? (
-            <TouchableOpacity onPress={() => handleTextChange('')}>
+          {inputValue ? (
+            <TouchableOpacity onPress={() => setInputValue('')}>
               <Image
-                style={styles.delete_icon}
-                source={require('../../assets/icons/Delete_icon.png')}
+                style={styles.clear_icon}
+                source={require('../../assets/icons/Clear_icon.png')}
               />
             </TouchableOpacity>
           ) : null}
@@ -103,34 +131,58 @@ const styles = StyleSheet.create({
     margin: 0,
   },
   bottomSheet: {
-    // padding: 15,
+    alignItems: 'center',
     backgroundColor: '#F8F8F8',
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
   },
 
+  handle: {
+    position: 'absolute',
+    top: 0,
+    width: 61,
+    height: 4,
+    backgroundColor: '#4B595C',
+    borderBottomLeftRadius: 4,
+    borderBottomRightRadius: 4,
+  },
+
   header: {
-    margin: 15,
+    width: '100%',
+    // padding: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   back_icon: {
-    width: 20,
-    height: 20,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
   },
+  submitBtnStyle: {
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+  },
+
   title: {
+    position: 'absolute',
+    marginTop: 10,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'Ubuntu-Bold',
     color: '#4B595C',
   },
 
   info: {
+    width: '100%',
     height: 36,
+  },
+  infoTextStyle: {
+    paddingHorizontal: 15,
+    fontFamily: 'Ubuntu-Medium',
+    color: '#fff',
   },
 
   labelInput_wrapper: {
     margin: 15,
-    display: 'flex',
     flexDirection: 'row',
   },
   icon: {
@@ -147,20 +199,21 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 122,
     backgroundColor: '#fff',
-    paddingTop: 5,
     fontSize: 16,
-    fontWeight: '500',
     borderRadius: 16,
   },
   input: {
     height: '100%',
     paddingHorizontal: 10,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'Ubuntu-Bold',
     color: '#4B595C',
     borderRadius: 16,
+    paddingBottom: 70,
+    // backgroundColor: '#dedede',
+    // opacity: 0.6,
   },
-  delete_icon: {
+  clear_icon: {
     position: 'absolute',
     right: 0,
     bottom: 0,

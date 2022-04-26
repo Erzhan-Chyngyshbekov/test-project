@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
   footer: {
     height: 80,
     padding: 15,
+    marginTop: 20,
     backgroundColor: '#fff',
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
@@ -37,7 +38,7 @@ const styles = StyleSheet.create({
   },
   btn_text: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: 'Ubuntu-Bold',
     color: '#fff',
   },
 });

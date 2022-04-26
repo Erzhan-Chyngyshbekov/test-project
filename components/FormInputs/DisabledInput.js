@@ -13,7 +13,7 @@ function Disabled({label, value, handleTextChange, icon}) {
     top: !isFocused && !value ? 13 : 4,
     fontSize: !isFocused && !value ? 16 : 11,
     color: !isFocused ? '#B2BDC5' : '#4B595C',
-    fontWeight: '500',
+    fontFamily: 'Ubuntu-Medium',
   };
 
   return (
@@ -27,14 +27,7 @@ function Disabled({label, value, handleTextChange, icon}) {
           value={value}
           placeholder={value}
           onChangeText={newText => handleTextChange(newText)}
-          style={{
-            height: 50,
-            paddingHorizontal: 10,
-            fontSize: 16,
-            fontWeight: 'bold',
-            color: '#4B595C',
-            borderRadius: 16,
-          }}
+          style={styles.input}
           onFocus={handleFocus}
           onBlur={handleBlur}
           blurOnSubmit
@@ -66,6 +59,14 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     fontSize: 16,
     fontWeight: '500',
+    borderRadius: 16,
+  },
+  input: {
+    height: 50,
+    paddingHorizontal: 10,
+    fontSize: 16,
+    fontFamily: 'Ubuntu-Bold',
+    color: '#4B595C',
     borderRadius: 16,
   },
 });

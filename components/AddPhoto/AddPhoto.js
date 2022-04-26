@@ -24,8 +24,8 @@ function AddPhoto() {
       path: 'images',
       mediaType: 'photo',
     },
-    includeBase64: true,
-    selectionLimit: 5,
+    includeBase64: false,
+    selectionLimit: 5 - photos.length,
   };
 
   const openGallery = () => {
@@ -35,9 +35,11 @@ function AddPhoto() {
       } else if (response.errorCode) {
         console.log('Image Picker error: ' + response.errorMessage);
       } else {
-        // const source = response.assets[0].uri;
+        // console.log(response.assets);
         response.assets.forEach(item => {
-          const source = item.uri;
+          // const source = item.uri;
+          const source = {uri: item.uri, id: item.fileName};
+          console.log(source);
           setPhotos([...photos, source]);
         });
       }
@@ -60,24 +62,25 @@ function AddPhoto() {
   const deletePhoto = id => {
     setPhotos(
       photos.filter(photo => {
-        photo !== photos[id];
+        photo.id !== id;
+        console.log(photo);
       }),
     );
   };
 
   return (
     <View style={styles.photos_wrapper}>
-      {photos.map((photo, photoId) => (
-        <View key={photoId}>
-          <Image source={{uri: photo}} style={styles.photo_icon} />
+      {photos.map(photo => (
+        <View key={photo.id}>
+          <Image source={{uri: photo.uri}} style={styles.added_pic} />
           <TouchableOpacity
             style={styles.delete_icon}
             onPress={() => {
-              deletePhoto(photoId);
+              deletePhoto(photo.id);
             }}>
             <Image
-              style={{width: 20, height: 20}}
-              source={require('../../assets/icons/Delete_icon.png')}
+              style={{width: 15, height: 15}}
+              source={require('../../assets/icons/Delete_white_icon.png')}
             />
           </TouchableOpacity>
         </View>
@@ -114,7 +117,10 @@ function AddPhoto() {
 
 const styles = StyleSheet.create({
   photos_wrapper: {
-    margin: 15,
+    width: '100%',
+    height: '20%',
+    paddingHorizontal: 15,
+    paddingBottom: 15,
     flexDirection: 'row',
   },
   photo_icon: {
@@ -125,12 +131,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 11,
   },
+  added_pic: {
+    width: 50,
+    height: 50,
+    marginRight: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 11,
+    backgroundColor: '#000',
+    opacity: 0.5,
+  },
   delete_icon: {
     position: 'absolute',
     top: 0,
     right: 10,
-    width: 20,
-    height: 20,
+    width: 15,
+    height: 15,
+    margin: 3,
   },
 });
 

@@ -36,12 +36,13 @@ function Tabs() {
 const styles = StyleSheet.create({
   tabs: {
     // marginBottom: 20,
-    margin: 15,
+    width: '100%',
+    padding: 15,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   tab: {
-    width: '30%',
+    width: '31%',
     height: 69,
     padding: 5,
     flexDirection: 'row',
@@ -52,19 +53,16 @@ const styles = StyleSheet.create({
   title_inactive: {
     marginLeft: 5,
     fontSize: 10,
-    fontWeight: 'bold',
+    fontFamily: 'Ubuntu-Bold',
     color: '#DEDEDE',
-    width: 56,
+    width: 60,
   },
-  //   'title:last-child': {
-  //     color: '#00D8F9',
-  //   },
   title_active: {
     marginLeft: 5,
     fontSize: 10,
-    fontWeight: 'bold',
+    fontFamily: 'Ubuntu-Bold',
     color: '#00D8F9',
-    width: 56,
+    width: 60,
   },
   img: {
     width: 30,
